@@ -25,8 +25,11 @@ combined$rater3 <- do.call(paste, as.list(combined[,c(3,6,9,12,15,18)]))
 
 print("")
 print("***************************************")
-print("combination of the plans as one observation")
+print("combination of the plans as one observation - light")
+
 print(kappam.light(combined[,c('rater1','rater2','rater3')]))
+print("combination of the plans as one observation - iota")
+print(iota(list(Sentinel, Negs, Sum, Count, Divzero, Avg)))
 
 
 ### icc for the grade, arguments
