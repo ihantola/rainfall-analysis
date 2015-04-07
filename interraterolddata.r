@@ -12,4 +12,4 @@ Avg <- read.csv(file="data/Rainfall- combined - Avg2.csv",head=TRUE,sep=",")
 Grade <- read.csv(file="data/Rainfall- combined - Grade2.csv",head=TRUE,sep=",")
 
 
-source("analysis.r")
+source("interrater-common.r")
