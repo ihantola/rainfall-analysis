@@ -28,10 +28,14 @@ cats= c("tinel", "negs", "sum", "count", "divzero", "average")
 points= c("t", "n", "s", "c", "d", "a")
 
 printErrorRates = function(All) { 
-  U1_agg <- allOk(subset(All, uni=="University 1")) 
-  U2_agg <- allOk(subset(All, uni=="University 2")) 
+  U1_agg <- allOk(subset(All, uni=="University 1"))
+  U1_agg$percent =  round(U1_agg$percent,3)*100  
+  U2_agg <- allOk(subset(All, uni=="University 2"))
+  U2_agg$percent =  round(U2_agg$percent,3)*100   
   U3_agg <- allOk(subset(All, uni=="University 3"))
+  U3_agg$percent =  round(U3_agg$percent,3)*100  
   All_agg <- allOk(All)
+  All_agg$percent =  round(All_agg$percent,3)*100  
 
   ##########################################################################################################
   print("How many plans are correct - rowname is the number of plans without problems")
@@ -69,6 +73,7 @@ All2=All
 All2[All2$divzero=="xgp","divzero"]="ok"
 All2[All2$divzero=="xgp","d"]=3
 All2$n=3
+printErrorRates(All2)
 
 print("======================================================")
 print("Error rates when ignoring all sentinel problems")
