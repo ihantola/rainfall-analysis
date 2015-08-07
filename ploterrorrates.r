@@ -3,10 +3,11 @@
 ## 
 ## Creates two files: 
 
-FILE1 = "errorrates_variant1.pdf"
-FILE2 = "errorrates_variant2.pdf"
+FILE1 = "errorrates_variant1.svg"
+FILE2 = "errorrates_variant2.svg"
 
 library(ggplot2)
+library(RSvgDevice)
 
 ## calculated how many students have 1, 2, ... 6 plans correct. counts and percentages
 allOk <- function(Uni) {
@@ -43,7 +44,7 @@ cats= c("tinel", "negs", "sum", "count", "divzero", "average")
 # the same plans as points (x=0, ok=3, all other=1)
 points= c("t", "n", "s", "c", "d", "a")
 
-plotErrorRates = function(All, filename) { 
+plotErrorRates = function(All, filename, xtitle, ytitle) { 
   U1_agg <- allOk(subset(All, uni=="University 1"))
   U1_agg$percent =  round(U1_agg$percent,5) 
   U1_agg = U1_agg[rev(order(row.names(U1_agg))),]
@@ -61,6 +62,7 @@ plotErrorRates = function(All, filename) {
   All_agg = All_agg[rev(order(row.names(All_agg))),]   
   All_agg$cumpercent = cumsum(All_agg$percent) 
 
+  ## TODO: onko -6 oikein, pitäisikö toisessa variantissa olla -5 XXX XXX
   All_agg$errors = abs(as.numeric(rownames(All_agg))-6)
   U1_agg$errors = abs(as.numeric(rownames(U1_agg))-6)
   U2_agg$errors = abs(as.numeric(rownames(U2_agg))-6)
@@ -73,17 +75,26 @@ plotErrorRates = function(All, filename) {
   grouped = rbind(U1_agg, U2_agg, U3_agg)
   grouped$p = round(grouped$percent*100,0)
 
-  pdf(filename)
-  ggplot(data=grouped, aes(x=errors, y=p)) + geom_bar(stat="identity", position=position_dodge()) + ylab("") +  scale_fill_grey() + theme_bw(base_size=24) + facet_wrap(~group, nrow=1)
-  dev.off()
+  #pdf(filename)
+
+  #devSVG(file = filename, width = 5, height = 7,
+  #bg = "white", fg = "black", onefile=TRUE, xmlHeader=TRUE)
+  ggplot(data=grouped, aes(x=errors, y=p)) + 
+         geom_bar(stat="identity", position=position_dodge()) + ylab(ytitle) + xlab(xtitle) + scale_fill_grey() + 
+         theme_bw(base_size=24) +
+         #theme_minimal(base_size=24) +
+         ylim(0,100) + scale_x_continuous(breaks=0:6) +
+         facet_wrap(~group, nrow=1)
+  
 }
 
+         #scale_y_continuous(labels=percent)  
 
 print("======================================================")
 print("Error rates for the original assignment")
 print("======================================================")
 print(paste("Creating file", FILE1))
-plotErrorRates(All, FILE1)
+plotErrorRates(All, FILE1, "# of incorrect or missing plans", "Percentage of students")
 
 print("======================================================")
 print("Error rates when ignoring all xgp in divzero and all errors in negs")
@@ -94,7 +105,7 @@ All2[All2$divzero=="xgp","d"]=3
 All2$negs="ok"
 All2$n=3
 print(paste("Creating file", FILE2))
-plotErrorRates(All, FILE2)
+plotErrorRates(All2, FILE2, "# of incorrect or missing plans (no Negative)", "")
 
 
 
